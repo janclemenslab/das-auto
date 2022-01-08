@@ -1,0 +1,18 @@
+Gain:
+  gain:
+    Uniform:
+       lower: 0.5
+       upper: 2
+
+MaskNoise:
+  std:
+    Normal:
+      mean: 0
+      std: .01
+  mean:
+    Constant:
+       value: 0
+
+HorizontalFlip:
+  flip:
+    Uniform:
