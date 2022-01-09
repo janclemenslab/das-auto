@@ -67,7 +67,7 @@ def train(load_name: str,
     d = io.load(params['data_dir'], x_suffix=params['x_suffix'], y_suffix=params['y_suffix'])
     params.update(d.attrs)  # add metadata from data.attrs to params for saving
 
-    if fraction_data is not None:  # train on a subset
+    if fraction_data is not None and fraction_data != 1.0:  # train on a subset
         if fraction_data > 1.0:  # seconds
             logging.info(
                 f"{fraction_data} seconds corresponds to {fraction_data / d.attrs['samplerate_x_Hz']} of the training data.")
