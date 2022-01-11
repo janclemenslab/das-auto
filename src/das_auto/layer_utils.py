@@ -19,7 +19,7 @@ def pairwise_euclidean_distance(vects):
 
     sum_square = tf.math.reduce_sum(tf.math.square(x - y[:, tf.newaxis]),
                                     axis=(-2, -1), keepdims=True)[..., 0]
-    euc_dist = tf.math.sqrt(tf.math.maximum(sum_square, 0))
+    euc_dist = tf.math.sqrt(tf.math.maximum(sum_square, tf.keras.backend.epsilon()))
     return euc_dist
 
 
