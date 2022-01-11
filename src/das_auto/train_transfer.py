@@ -20,22 +20,26 @@ from das import data, models, utils, predict, io, evaluate, tracking
 from typing import Optional
 
 
-def train(load_name: str,
-          *,
-          data_dir: str = None,
-          save_dir: str = None,
-          save_prefix: Optional[str] = None,
-          save_name: Optional[str] = None,
-          verbose: int = 1,
-          nb_epoch: int = 400,
-          fraction_data: float = None,
-          seed: int = None,
-          freeze: bool = False,
-          learning_rate: float = 0.0001,
-          wandb_api_token: Optional[str] = None,
-          wandb_project: Optional[str] = None,
-          wandb_entity: Optional[str] = None,
-          reduce_lr: bool = False):
+def train(
+    load_name: str,
+    *,
+    data_dir: str = None,
+    save_dir: str = None,
+    save_prefix: Optional[str] = None,
+    save_name: Optional[str] = None,
+    verbose: int = 1,
+    nb_epoch: int = 400,
+    fraction_data: float = None,
+    seed: int = None,
+    freeze: bool = False,
+    learning_rate: float = 0.0001,
+    wandb_api_token: Optional[str] = None,
+    wandb_project: Optional[str] = None,
+    wandb_entity: Optional[str] = None,
+    reduce_lr: bool = False,
+    feature_layer: int = 2,
+    is_auto=True,
+):
 
     if save_prefix is None:
         save_prefix = ''
@@ -122,8 +126,12 @@ def train(load_name: str,
         upsample = True
         loss = 'categorical_crossentropy'
 
-        encoder = model.layers[2]
-        new_model = keras.Model(encoder.inputs, encoder.output, name='encoder')
+        encoder = model.layers[feature_layer]
+        if is_auto:
+            new_model = keras.Model(encoder.inputs, encoder.output, name='encoder')
+        else:
+            new_model = keras.Model(model.input, encoder.output, name='encoder')
+
         # freeze layers
         if freeze:
             for layer in new_model.layers:
