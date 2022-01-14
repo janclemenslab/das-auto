@@ -128,9 +128,11 @@ def train(
 
         encoder = model.layers[feature_layer]
         if is_auto:
-            new_model = keras.Model(encoder.inputs, encoder.output, name='encoder')
+            new_input = encoder.inputs
         else:
-            new_model = keras.Model(model.input, encoder.output, name='encoder')
+            new_input = model.input
+
+        new_model = keras.Model(new_input, encoder.output, name='encoder')
 
         # freeze layers
         if freeze:
