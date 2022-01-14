@@ -1,9 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras import layers
-from tensorflow.keras.losses import Loss
 from . import layer_utils
 import das.models
-
+from typing import Optional
 
 model_dict = dict()
 
@@ -14,10 +13,26 @@ def _register_as_model(func):
     return func
 
 
-def get_encoder(model, layer_index=-4):
+def get_encoder(model: tf.keras.Model, layer_index: Optional[int] = None) -> tf.keras.Model:
+    """[summary]
+
+    Args:
+        model (tf.keras.Model): [description]
+        layer_index (Optional[int], optional):
+            Layer number to use as output.
+            If None, use last Add layer.
+            Defaults to None.
+
+    Returns:
+        tf.keras.Model
+    """
+    if layer_index is None:
+        for cnt, layer in enumerate(model.layers):
+            if isinstance(layer, layers.Add):
+                layer_index = cnt
+
     intermediate_rep = layers.Concatenate(axis=-1)(model.layers[layer_index].input)
-    embedding_network = tf.keras.Model(inputs=model.input,
-                                       outputs=intermediate_rep)
+    embedding_network = tf.keras.Model(inputs=model.input, outputs=intermediate_rep)
     return embedding_network
 
 
@@ -41,4 +56,3 @@ def siamese(*args, **kwargs):
     siamese = get_siamese(encoder)
     siamese.compile(loss=layer_utils.ContrastiveLossCOLA(margin=kwargs['margin']), optimizer="Adam")
     return siamese
-
