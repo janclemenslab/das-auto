@@ -101,7 +101,7 @@ def train(*,
     train_gen = das_auto.data.PairGen(data_gen, augs, thres=thres)
 
     # TODO freeze augs for validation
-    val_gen = das_auto.data.PairGen(val_gen, augs)
+    val_gen = das_auto.data.PairGen(val_gen, augs, thres=thres)
 
     model = das_auto.models.model_dict['siamese'](**params)
     model.summary()
