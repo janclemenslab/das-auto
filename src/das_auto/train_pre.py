@@ -43,9 +43,10 @@ def train(*,
           reduce_lr: bool = False,
           reduce_lr_patience: int = 5,
           fraction_data: Optional[float] = None,
+          thres: Optional[float] = None,
           seed: Optional[int] = None,
           batch_level_subsampling: bool = False,
-          augmentations: str = 'test_augmentations.yaml',
+          augmentations: Optional[str] = None,
           wandb_api_token: Optional[str] = None,
           wandb_project: Optional[str] = None,
           wandb_entity: Optional[str] = None,
@@ -92,9 +93,12 @@ def train(*,
     data_gen = das.data.AudioSequence(d['train']['x'], d['train']['y'], shuffle=True, nb_repeats=1, **params)
     val_gen = das.data.AudioSequence(d['val']['x'], d['val']['y'], shuffle=False, **params)
 
-    augs = das.augmentation.Augmentations.from_yaml(augmentations)
+    if augmentations is not None:
+        augs = das.augmentation.Augmentations.from_yaml(augmentations)
+    else:
+        augs = None
 
-    train_gen = das_auto.data.PairGen(data_gen, augs)
+    train_gen = das_auto.data.PairGen(data_gen, augs, thres=thres)
 
     # TODO freeze augs for validation
     val_gen = das_auto.data.PairGen(val_gen, augs)
