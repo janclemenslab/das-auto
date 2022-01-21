@@ -13,7 +13,8 @@ def _register_as_model(func):
     return func
 
 
-def get_encoder(model: tf.keras.Model, layer_index: Optional[int] = None) -> tf.keras.Model:
+def get_encoder(model: tf.keras.Model, layer_index: Optional[int] = None,
+                last_conv: bool = False) -> tf.keras.Model:
     """[summary]
 
     Args:
@@ -30,8 +31,14 @@ def get_encoder(model: tf.keras.Model, layer_index: Optional[int] = None) -> tf.
         for cnt, layer in enumerate(model.layers):
             if isinstance(layer, layers.Add):
                 layer_index = cnt
+        if last_conv:
+            layer_index = layer_index - 1
 
-    intermediate_rep = layers.Concatenate(axis=-1)(model.layers[layer_index].input)
+    if not last_conv:
+        intermediate_rep = layers.Concatenate(axis=-1)(model.layers[layer_index].input)
+    else:
+        intermediate_rep = model.layers[layer_index].output
+
     embedding_network = tf.keras.Model(inputs=model.input, outputs=intermediate_rep)
     return embedding_network
 
